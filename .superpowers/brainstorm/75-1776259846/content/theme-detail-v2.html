@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>테마 상세 v2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Georgia', serif; background: #1a1614; color: #e8e4de; }
+
+  .page-title {
+    text-align: center;
+    padding: 28px 24px 4px;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #666;
+    font-family: sans-serif;
+  }
+  .page-subtitle {
+    text-align: center;
+    padding: 0 24px 28px;
+    font-size: 13px;
+    color: #777;
+    font-family: sans-serif;
+  }
+
+  .phones {
+    display: flex;
+    justify-content: center;
+    gap: 36px;
+    padding: 0 40px 48px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .phone-block { text-align: center; }
+  .phone-label {
+    font-family: sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 12px;
+  }
+
+  .phone {
+    width: 265px;
+    background: #141210;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+    border: 1px solid #2a2620;
+  }
+
+  /* ── HERO ── */
+  .theme-hero {
+    height: 140px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 14px 18px;
+  }
+  .theme-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 10%, rgba(0,0,0,0.7));
+  }
+  .hero-back {
+    position: absolute;
+    top: 14px; left: 16px;
+    font-family: sans-serif;
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    z-index: 2;
+  }
+  .hero-content { position: relative; z-index: 1; }
+  .hero-tag {
+    font-family: sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #c9a87c;
+    margin-bottom: 5px;
+  }
+  .hero-title {
+    font-size: 17px;
+    color: white;
+    line-height: 1.3;
+    font-style: italic;
+  }
+
+  /* ── TABS ── */
+  .view-tabs {
+    display: flex;
+    background: #1e1a16;
+    border-bottom: 1px solid #2a2620;
+  }
+  .view-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0 9px;
+    font-family: sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #555;
+    border-bottom: 2px solid transparent;
+  }
+  .view-tab.active {
+    color: #c9a87c;
+    border-bottom-color: #c9a87c;
+  }
+
+  /* ── CARD VIEW ── */
+  .card-list {
+    background: #141210;
+    padding: 14px 14px 10px;
+  }
+
+  .place-card {
+    margin-bottom: 14px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .card-img {
+    height: 110px;
+    display: flex;
+    align-items: flex-end;
+    padding: 12px 14px;
+    position: relative;
+  }
+  .card-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 30%, rgba(0,0,0,0.75));
+  }
+  .card-img-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .card-num {
+    font-family: sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    color: rgba(255,255,255,0.45);
+    position: absolute;
+    top: 0; left: 0;
+    padding: 10px 12px;
+    z-index: 1;
+  }
+  .card-place-name {
+    font-size: 14px;
+    color: white;
+    font-style: italic;
+    line-height: 1.3;
+  }
+  .card-location {
+    font-family: sans-serif;
+    font-size: 8.5px;
+    color: rgba(255,255,255,0.45);
+    text-align: right;
+  }
+
+  .card-body {
+    background: #1e1a16;
+    padding: 11px 14px 13px;
+    border-top: 1px solid #2a2520;
+  }
+  .card-story {
+    font-family: sans-serif;
+    font-size: 10px;
+    color: #8a8078;
+    line-height: 1.65;
+    margin-bottom: 9px;
+    font-style: italic;
+  }
+  .card-cta {
+    font-family: sans-serif;
+    font-size: 9px;
+    color: #c9a87c;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── MAP VIEW ── */
+  .map-container {
+    position: relative;
+    height: 290px;
+    overflow: hidden;
+  }
+  .map-bg {
+    position: absolute;
+    inset: 0;
+    background: #2a2420;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .road-h {
+    position: absolute;
+    left: 0; right: 0;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+  .road-v {
+    position: absolute;
+    top: 0; bottom: 0;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+
+  .pin {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transform: translate(-50%, -100%);
+  }
+  .pin-bubble {
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    background: #2a2218;
+    border: 2px solid #3a3028;
+  }
+  .pin-bubble.active {
+    background: #c9a87c;
+    border-color: #c9a87c;
+    width: 38px; height: 38px;
+    font-size: 18px;
+  }
+  .pin-tail {
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 8px solid #3a3028;
+    margin-top: -1px;
+  }
+  .pin-tail.active { border-top-color: #c9a87c; }
+
+  .map-topbar {
+    position: absolute;
+    top: 10px; left: 10px; right: 10px;
+    background: rgba(20,18,16,0.92);
+    border-radius: 7px;
+    padding: 7px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 3;
+    border: 1px solid #3a3028;
+    backdrop-filter: blur(8px);
+  }
+  .map-topbar-title {
+    font-size: 10px;
+    color: #e8e4de;
+    font-style: italic;
+  }
+  .map-count {
+    font-family: sans-serif;
+    font-size: 8.5px;
+    color: #c9a87c;
+  }
+
+  .map-popup {
+    position: absolute;
+    bottom: 12px; left: 12px; right: 12px;
+    background: #1e1a16;
+    border-radius: 10px;
+    padding: 11px 13px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border: 1px solid #3a3028;
+  }
+  .popup-emoji { font-size: 22px; flex-shrink: 0; }
+  .popup-info { flex: 1; min-width: 0; }
+  .popup-name {
+    font-size: 11px;
+    color: #e8e4de;
+    margin-bottom: 2px;
+    font-style: italic;
+  }
+  .popup-sub {
+    font-family: sans-serif;
+    font-size: 9px;
+    color: #6a6058;
+    line-height: 1.4;
+  }
+  .popup-btn {
+    font-family: sans-serif;
+    font-size: 8.5px;
+    color: #c9a87c;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── BOTTOM TABS ── */
+  .tabs {
+    display: flex;
+    background: #1a1614;
+    border-top: 1px solid #2a2620;
+    padding: 9px 0 11px;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 8px;
+    color: #444;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .tab.active { color: #c9a87c; }
+  .tab-icon { font-size: 15px; display: block; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<div class="page-title">테마 상세 화면 — 감성 통일</div>
+<div class="page-subtitle">다크 톤, 금빛 포인트 컬러로 홈화면과 동일한 감성</div>
+
+<div class="phones">
+
+  <!-- CARD VIEW -->
+  <div class="phone-block">
+    <div class="phone-label">카드뷰</div>
+    <div class="phone">
+      <div class="theme-hero" style="background: linear-gradient(160deg, #1a1020 0%, #3d1a0e 100%);">
+        <div class="hero-back">← 교토</div>
+        <div class="hero-content">
+          <div class="hero-tag">소설 · 7곳</div>
+          <div class="hero-title">미시마 유키오의<br>금각사 루트</div>
+        </div>
+      </div>
+
+      <div class="view-tabs">
+        <div class="view-tab active">카드뷰</div>
+        <div class="view-tab">지도뷰</div>
+      </div>
+
+      <div class="card-list">
+        <div class="place-card">
+          <div class="card-img" style="background: linear-gradient(135deg, #2a1a08, #5a3010);">
+            <div class="card-num">01</div>
+            <div class="card-img-content">
+              <div class="card-place-name">금각사<br>(킨카쿠지)</div>
+              <div class="card-location">기타야마</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-story">"미조구치가 집착한 그 아름다움. 불꽃보다 더 오래 타오르는 것들에 대하여."</div>
+            <div class="card-cta">자세히 보기 →</div>
+          </div>
+        </div>
+
+        <div class="place-card">
+          <div class="card-img" style="background: linear-gradient(135deg, #0a1422, #102238);">
+            <div class="card-num">02</div>
+            <div class="card-img-content">
+              <div class="card-place-name">료안지<br>석정</div>
+              <div class="card-location">우쿄구</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-story">"작가가 자주 찾아 사색했던 곳. 비어있음과 가득참이 공존하는 정원."</div>
+            <div class="card-cta">자세히 보기 →</div>
+          </div>
+        </div>
+
+        <div style="text-align:center; padding: 4px 0 4px; font-family:sans-serif; font-size:9px; color:#3a3428; letter-spacing:0.1em;">5곳 더 ↓</div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active"><span class="tab-icon">📖</span>스토리</div>
+        <div class="tab"><span class="tab-icon">🗺️</span>지도</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP VIEW -->
+  <div class="phone-block">
+    <div class="phone-label">지도뷰</div>
+    <div class="phone">
+      <div class="theme-hero" style="background: linear-gradient(160deg, #1a1020 0%, #3d1a0e 100%);">
+        <div class="hero-back">← 교토</div>
+        <div class="hero-content">
+          <div class="hero-tag">소설 · 7곳</div>
+          <div class="hero-title">미시마 유키오의<br>금각사 루트</div>
+        </div>
+      </div>
+
+      <div class="view-tabs">
+        <div class="view-tab">카드뷰</div>
+        <div class="view-tab active">지도뷰</div>
+      </div>
+
+      <div class="map-container">
+        <div class="map-bg"></div>
+        <div class="road-h" style="top:75px; height:8px;"></div>
+        <div class="road-h" style="top:130px; height:5px;"></div>
+        <div class="road-h" style="top:195px; height:7px;"></div>
+        <div class="road-v" style="left:68px; width:7px;"></div>
+        <div class="road-v" style="left:138px; width:5px;"></div>
+        <div class="road-v" style="left:205px; width:7px;"></div>
+
+        <div class="map-topbar">
+          <div class="map-topbar-title">미시마 유키오의 금각사 루트</div>
+          <div class="map-count">7곳</div>
+        </div>
+
+        <div class="pin" style="left:92px; top:108px;">
+          <div class="pin-bubble active">🏯</div>
+          <div class="pin-tail active"></div>
+        </div>
+        <div class="pin" style="left:158px; top:88px;">
+          <div class="pin-bubble">⛩️</div>
+          <div class="pin-tail"></div>
+        </div>
+        <div class="pin" style="left:58px; top:162px;">
+          <div class="pin-bubble">🌿</div>
+          <div class="pin-tail"></div>
+        </div>
+        <div class="pin" style="left:198px; top:152px;">
+          <div class="pin-bubble">📖</div>
+          <div class="pin-tail"></div>
+        </div>
+        <div class="pin" style="left:132px; top:205px;">
+          <div class="pin-bubble">🕯️</div>
+          <div class="pin-tail"></div>
+        </div>
+
+        <div class="map-popup">
+          <div class="popup-emoji">🏯</div>
+          <div class="popup-info">
+            <div class="popup-name">금각사 (킨카쿠지)</div>
+            <div class="popup-sub">미조구치가 집착한 바로 그 건물</div>
+          </div>
+          <div class="popup-btn">보기 →</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active"><span class="tab-icon">📖</span>스토리</div>
+        <div class="tab"><span class="tab-icon">🗺️</span>지도</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

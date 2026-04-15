@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>첫 화면 레이아웃 옵션</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Georgia', serif; background: #f5f3ee; color: #2c2c2c; }
+
+  .page-title {
+    text-align: center;
+    padding: 32px 24px 8px;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #888;
+    font-family: sans-serif;
+  }
+  .page-subtitle {
+    text-align: center;
+    padding: 0 24px 32px;
+    font-size: 14px;
+    color: #666;
+    font-family: sans-serif;
+  }
+
+  .layouts {
+    display: flex;
+    gap: 24px;
+    padding: 0 32px 48px;
+    max-width: 1300px;
+    margin: 0 auto;
+    align-items: flex-start;
+  }
+
+  .layout-option {
+    flex: 1;
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 3px solid transparent;
+    transition: border-color 0.2s, transform 0.2s;
+    background: white;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+  .layout-option:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(0,0,0,0.12); }
+  .layout-option.selected { border-color: #8b6f4e; }
+
+  .option-label {
+    background: #2c2c2c;
+    color: white;
+    font-family: sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .option-label span { opacity: 0.6; font-size: 10px; }
+
+  /* ─── OPTION A: 매거진형 ─── */
+  .mockup-a {
+    background: #faf9f6;
+  }
+  .a-hero {
+    background: linear-gradient(160deg, #1a1a2e 0%, #2d1b0e 100%);
+    padding: 32px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .a-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+  .a-city-tag {
+    font-family: sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #c9a87c;
+    margin-bottom: 10px;
+  }
+  .a-hero-title {
+    font-size: 22px;
+    color: white;
+    line-height: 1.35;
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+  .a-hero-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    font-family: sans-serif;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .a-hero-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .a-badge {
+    background: rgba(201,168,124,0.2);
+    color: #c9a87c;
+    font-family: sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .a-places {
+    font-family: sans-serif;
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+  }
+  .a-section-title {
+    font-family: sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #999;
+    padding: 16px 16px 8px;
+    border-bottom: 1px solid #ede9e3;
+    margin-bottom: 0;
+  }
+  .a-card-list { padding: 0 16px 16px; }
+  .a-card {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0ece6;
+    align-items: flex-start;
+  }
+  .a-card:last-child { border-bottom: none; }
+  .a-card-img {
+    width: 52px;
+    height: 52px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+  .a-card-title {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #2c2c2c;
+    margin-bottom: 3px;
+  }
+  .a-card-sub {
+    font-family: sans-serif;
+    font-size: 10px;
+    color: #999;
+    line-height: 1.4;
+  }
+
+  /* ─── OPTION B: 세로 스크롤 피드 ─── */
+  .mockup-b { background: #f0ede7; }
+  .b-header {
+    padding: 20px 20px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .b-logo {
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #2c2c2c;
+  }
+  .b-city {
+    font-family: sans-serif;
+    font-size: 10px;
+    color: #999;
+    letter-spacing: 0.08em;
+  }
+  .b-story {
+    margin: 0 16px 16px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .b-story-img {
+    height: 160px;
+    display: flex;
+    align-items: flex-end;
+    padding: 16px;
+    position: relative;
+  }
+  .b-story-img::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 100px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.75));
+  }
+  .b-story-text { position: relative; z-index: 1; }
+  .b-story-category {
+    font-family: sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 4px;
+  }
+  .b-story-title {
+    font-size: 14px;
+    color: white;
+    line-height: 1.35;
+    font-style: italic;
+  }
+  .b-story-body {
+    background: white;
+    padding: 12px 14px;
+  }
+  .b-story-hook {
+    font-size: 11px;
+    color: #555;
+    line-height: 1.65;
+    margin-bottom: 8px;
+  }
+  .b-story-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .b-story-places {
+    font-family: sans-serif;
+    font-size: 9px;
+    color: #bbb;
+  }
+  .b-story-cta {
+    font-family: sans-serif;
+    font-size: 9px;
+    color: #8b6f4e;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .b-story-small {
+    margin: 0 16px 12px;
+    display: flex;
+    gap: 10px;
+  }
+  .b-small-card {
+    flex: 1;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .b-small-img {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+  .b-small-title {
+    padding: 6px 8px 8px;
+    font-size: 10px;
+    line-height: 1.4;
+    color: #2c2c2c;
+  }
+
+  /* ─── OPTION C: 큐레이션 섹션형 ─── */
+  .mockup-c { background: #faf9f6; }
+  .c-header {
+    background: #2c2c2c;
+    padding: 20px 20px 18px;
+  }
+  .c-logo {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 12px;
+  }
+  .c-city-title {
+    font-size: 28px;
+    color: white;
+    font-style: italic;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .c-city-sub {
+    font-family: sans-serif;
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.08em;
+  }
+  .c-search {
+    margin: 0 16px;
+    margin-top: -14px;
+    background: white;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: sans-serif;
+    font-size: 11px;
+    color: #bbb;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+  .c-section { margin-bottom: 20px; }
+  .c-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0 16px 10px;
+    border-bottom: 1px solid #ede9e3;
+    margin-bottom: 12px;
+  }
+  .c-section-title {
+    font-family: sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #888;
+  }
+  .c-section-more {
+    font-family: sans-serif;
+    font-size: 9px;
+    color: #8b6f4e;
+  }
+  .c-featured {
+    margin: 0 16px 12px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .c-featured-img {
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+  }
+  .c-featured-body { padding: 10px 12px 12px; }
+  .c-featured-title { font-size: 12px; color: #2c2c2c; margin-bottom: 4px; line-height: 1.4; }
+  .c-featured-hook { font-family: sans-serif; font-size: 10px; color: #888; line-height: 1.5; }
+  .c-row {
+    display: flex;
+    gap: 10px;
+    padding: 0 16px;
+  }
+  .c-mini {
+    flex: 1;
+    background: white;
+    border-radius: 7px;
+    overflow: hidden;
+  }
+  .c-mini-img {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+  .c-mini-title {
+    padding: 5px 7px 7px;
+    font-size: 9px;
+    color: #2c2c2c;
+    line-height: 1.4;
+  }
+
+  .select-indicator {
+    font-family: sans-serif;
+    text-align: center;
+    padding: 12px;
+    font-size: 12px;
+    color: #8b6f4e;
+    font-style: italic;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .layout-option.selected .select-indicator { opacity: 1; }
+
+  .desc-block {
+    padding: 12px 16px;
+    background: #faf9f6;
+    border-top: 1px solid #ede9e3;
+  }
+  .desc-title {
+    font-family: sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    color: #2c2c2c;
+    margin-bottom: 4px;
+  }
+  .desc-text {
+    font-family: sans-serif;
+    font-size: 10px;
+    color: #777;
+    line-height: 1.55;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">첫 화면 레이아웃 — 3가지 방향</div>
+<div class="page-subtitle">감성적/문학적 톤 기준. 마음에 드는 방향을 클릭해 주세요.</div>
+
+<div class="layouts">
+
+  <!-- OPTION A -->
+  <div class="layout-option" onclick="this.classList.toggle('selected')">
+    <div class="option-label">
+      A. 매거진형 <span>에디터 픽 + 카드 리스트</span>
+    </div>
+    <div class="mockup-a">
+      <!-- Hero -->
+      <div class="a-hero">
+        <div class="a-city-tag">📍 교토 · Kyoto</div>
+        <div class="a-hero-title">미시마 유키오의<br>금각사 루트</div>
+        <div class="a-hero-sub">불꽃처럼 살다 간 작가가 바라본<br>교토의 풍경들을 따라서</div>
+        <div class="a-hero-meta">
+          <span class="a-badge">소설</span>
+          <span class="a-places">📍 7곳</span>
+        </div>
+      </div>
+      <!-- Story list -->
+      <div class="a-section-title">이번 달 교토의 이야기들</div>
+      <div class="a-card-list">
+        <div class="a-card">
+          <div class="a-card-img" style="background:#e8f4e8;">⛩️</div>
+          <div>
+            <div class="a-card-title">신센구미가 활약하던 곳</div>
+            <div class="a-card-sub">막부 말기, 교토를 지킨 무사들의 발자취 · 8곳</div>
+          </div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-img" style="background:#fef3e2;">🌸</div>
+          <div>
+            <div class="a-card-title">〈너의 이름은.〉 성지</div>
+            <div class="a-card-sub">신카이 마코토가 담아낸 교토의 빛 · 5곳</div>
+          </div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-img" style="background:#f0e8f4;">⚔️</div>
+          <div>
+            <div class="a-card-title">사카모토 료마의 마지막 날들</div>
+            <div class="a-card-sub">유신의 불꽃이 꺼진 자리들 · 6곳</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="desc-block">
+      <div class="desc-title">매거진형</div>
+      <div class="desc-text">히어로로 에디터 픽 1개를 크게 강조, 아래에 다른 스토리들을 컴팩트 리스트로. 잡지 느낌으로 첫 방문자를 자연스럽게 유도.</div>
+    </div>
+    <div class="select-indicator">✓ 선택됨</div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="layout-option" onclick="this.classList.toggle('selected')">
+    <div class="option-label">
+      B. 스토리 피드형 <span>풀블리드 이미지 + 훅 문구</span>
+    </div>
+    <div class="mockup-b">
+      <div class="b-header">
+        <div class="b-logo">CityStoryMap</div>
+        <div class="b-city">교토 Kyoto</div>
+      </div>
+      <!-- Featured story -->
+      <div class="b-story">
+        <div class="b-story-img" style="background: linear-gradient(135deg, #1a1a2e, #4a1a2e);">
+          <div class="b-story-text">
+            <div class="b-story-category">소설 · 1956년</div>
+            <div class="b-story-title">미시마 유키오의 금각사 루트</div>
+          </div>
+        </div>
+        <div class="b-story-body">
+          <div class="b-story-hook">"불꽃처럼 살다 간 작가가 바라본 교토의 풍경들. 금각사의 아름다움에 사로잡힌 한 청년의 이야기를 따라서."</div>
+          <div class="b-story-footer">
+            <span class="b-story-places">📍 7곳</span>
+            <span class="b-story-cta">탐험하기 →</span>
+          </div>
+        </div>
+      </div>
+      <!-- Small cards -->
+      <div class="b-story-small">
+        <div class="b-small-card">
+          <div class="b-small-img" style="background: linear-gradient(135deg, #1e3a2e, #2d5a3d);">⛩️</div>
+          <div class="b-small-title">신센구미가 활약하던 곳</div>
+        </div>
+        <div class="b-small-card">
+          <div class="b-small-img" style="background: linear-gradient(135deg, #1a2a4a, #2a3a6a);">🌌</div>
+          <div class="b-small-title">〈너의 이름은.〉 성지</div>
+        </div>
+        <div class="b-small-card">
+          <div class="b-small-img" style="background: linear-gradient(135deg, #3a1a1a, #6a2a2a);">⚔️</div>
+          <div class="b-small-title">사카모토 료마의 마지막</div>
+        </div>
+      </div>
+    </div>
+    <div class="desc-block">
+      <div class="desc-title">스토리 피드형</div>
+      <div class="desc-text">각 스토리가 이미지+훅 문구로 감성적으로 펼쳐짐. 인스타그램 피드처럼 스크롤하며 자연스럽게 발견. 이야기 중심.</div>
+    </div>
+    <div class="select-indicator">✓ 선택됨</div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="layout-option" onclick="this.classList.toggle('selected')">
+    <div class="option-label">
+      C. 큐레이션 섹션형 <span>도시 헤더 + 검색 + 섹션별</span>
+    </div>
+    <div class="mockup-c">
+      <div class="c-header">
+        <div class="c-logo">CityStoryMap</div>
+        <div class="c-city-title">Kyoto</div>
+        <div class="c-city-sub">교토의 이야기들을 탐험하세요</div>
+      </div>
+      <div style="padding: 0 16px; margin-top: -14px; margin-bottom: 16px; position: relative; z-index: 2;">
+        <div style="background:white; border-radius:6px; padding:9px 12px; font-family:sans-serif; font-size:10px; color:#bbb; box-shadow:0 2px 12px rgba(0,0,0,0.1);">🔍 바람의 검심, 사카모토 료마...</div>
+      </div>
+
+      <div class="c-section">
+        <div class="c-section-header">
+          <span class="c-section-title">✨ 에디터 픽</span>
+          <span class="c-section-more">전체 보기 →</span>
+        </div>
+        <div class="c-featured">
+          <div class="c-featured-img" style="background: linear-gradient(135deg, #1a1a2e, #3d1a0e);">📖</div>
+          <div class="c-featured-body">
+            <div class="c-featured-title">미시마 유키오의 금각사 루트</div>
+            <div class="c-featured-hook">불꽃처럼 살다 간 작가가 바라본 교토의 풍경들을 따라서</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="c-section">
+        <div class="c-section-header">
+          <span class="c-section-title">⚔️ 역사 속 인물들</span>
+          <span class="c-section-more">전체 보기 →</span>
+        </div>
+        <div class="c-row">
+          <div class="c-mini">
+            <div class="c-mini-img" style="background:#e8ede8;">⛩️</div>
+            <div class="c-mini-title">신센구미가 활약하던 곳</div>
+          </div>
+          <div class="c-mini">
+            <div class="c-mini-img" style="background:#ede8e8;">⚔️</div>
+            <div class="c-mini-title">사카모토 료마의 마지막 날들</div>
+          </div>
+          <div class="c-mini">
+            <div class="c-mini-img" style="background:#e8e8ed;">🏯</div>
+            <div class="c-mini-title">이토 히로부미의 교토</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="desc-block">
+      <div class="desc-title">큐레이션 섹션형</div>
+      <div class="desc-text">도시 헤더 + 검색 + 섹션별 큐레이션. 목적이 있는 유저(검색)와 탐험하는 유저(섹션 스크롤) 모두 수용. 50개가 되어도 섹션으로 소화 가능.</div>
+    </div>
+    <div class="select-indicator">✓ 선택됨</div>
+  </div>
+
+</div>
+
+</body>
+</html>

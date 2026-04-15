@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>테마 상세 v3</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Georgia', serif; background: #edeae3; color: #2c2c2c; }
+
+  .page-title {
+    text-align: center;
+    padding: 28px 24px 4px;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #999;
+    font-family: sans-serif;
+  }
+  .page-subtitle {
+    text-align: center;
+    padding: 0 24px 28px;
+    font-size: 13px;
+    color: #777;
+    font-family: sans-serif;
+  }
+
+  .phones {
+    display: flex;
+    justify-content: center;
+    gap: 36px;
+    padding: 0 40px 48px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .phone-block { text-align: center; }
+  .phone-label {
+    font-family: sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 12px;
+  }
+
+  .phone {
+    width: 270px;
+    background: #faf9f6;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.13);
+    border: 1px solid #e0dcd4;
+  }
+
+  /* ── HERO ── */
+  .theme-hero {
+    height: 130px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 14px 18px;
+    overflow: hidden;
+  }
+  .theme-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 10%, rgba(0,0,0,0.65));
+  }
+  .hero-back {
+    position: absolute;
+    top: 14px; left: 16px;
+    font-family: sans-serif;
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+    z-index: 2;
+  }
+  .hero-content { position: relative; z-index: 1; }
+  .hero-places {
+    font-family: sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 5px;
+  }
+  .hero-title {
+    font-size: 17px;
+    color: white;
+    line-height: 1.3;
+    font-style: italic;
+  }
+
+  /* ── TABS ── */
+  .view-tabs {
+    display: flex;
+    background: #faf9f6;
+    border-bottom: 1px solid #ede9e3;
+  }
+  .view-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0 9px;
+    font-family: sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #bbb;
+    border-bottom: 2px solid transparent;
+  }
+  .view-tab.active {
+    color: #2c2c2c;
+    border-bottom-color: #2c2c2c;
+  }
+
+  /* ── CARD LIST ── */
+  .card-list {
+    padding: 14px 14px 10px;
+    background: #f5f2ec;
+  }
+
+  .place-card {
+    margin-bottom: 14px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  /* Rich image area */
+  .card-img {
+    height: 120px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Texture overlay pattern */
+  .card-img::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    z-index: 1;
+  }
+
+  .card-img::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.5));
+    z-index: 2;
+  }
+
+  .card-emoji {
+    font-size: 42px;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+  }
+
+  .card-img-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 8px 14px 10px;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .card-num {
+    font-family: sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.45);
+    position: absolute;
+    top: 10px; left: 13px;
+    z-index: 3;
+  }
+
+  .card-place-name {
+    font-size: 14px;
+    color: white;
+    font-style: italic;
+    line-height: 1.25;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+
+  .card-location {
+    font-family: sans-serif;
+    font-size: 8.5px;
+    color: rgba(255,255,255,0.5);
+    text-align: right;
+    line-height: 1.3;
+  }
+
+  .card-body {
+    background: white;
+    padding: 12px 14px 13px;
+  }
+
+  .card-story {
+    font-size: 11px;
+    color: #6a6058;
+    line-height: 1.7;
+    margin-bottom: 9px;
+    font-style: italic;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-tags {
+    display: flex;
+    gap: 5px;
+  }
+
+  .card-tag {
+    font-family: sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    color: #bbb;
+    background: #f5f2ec;
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+
+  .card-cta {
+    font-family: sans-serif;
+    font-size: 9px;
+    color: #8b6f4e;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── MAP VIEW ── */
+  .map-container {
+    position: relative;
+    height: 295px;
+    overflow: hidden;
+  }
+  .map-bg {
+    position: absolute;
+    inset: 0;
+    background: #e8e2d8;
+    background-image:
+      linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .road-h {
+    position: absolute;
+    left: 0; right: 0;
+    background: rgba(255,255,255,0.8);
+    border-radius: 2px;
+  }
+  .road-v {
+    position: absolute;
+    top: 0; bottom: 0;
+    background: rgba(255,255,255,0.8);
+    border-radius: 2px;
+  }
+  .pin {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transform: translate(-50%, -100%);
+  }
+  .pin-bubble {
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+    background: white;
+    border: 2px solid #e8e2d8;
+  }
+  .pin-bubble.active {
+    background: #2c2c2c;
+    border-color: #2c2c2c;
+    width: 38px; height: 38px;
+    font-size: 18px;
+  }
+  .pin-tail {
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 8px solid white;
+    margin-top: -1px;
+    filter: drop-shadow(0 2px 1px rgba(0,0,0,0.1));
+  }
+  .pin-tail.active { border-top-color: #2c2c2c; }
+
+  .map-topbar {
+    position: absolute;
+    top: 10px; left: 10px; right: 10px;
+    background: rgba(250,249,246,0.95);
+    border-radius: 8px;
+    padding: 8px 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 3;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .map-topbar-title {
+    font-size: 10px;
+    color: #2c2c2c;
+    font-style: italic;
+  }
+  .map-count {
+    font-family: sans-serif;
+    font-size: 8.5px;
+    color: #8b6f4e;
+  }
+
+  .map-popup {
+    position: absolute;
+    bottom: 12px; left: 12px; right: 12px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+    display: flex;
+  }
+  .popup-color-bar {
+    width: 5px;
+    background: linear-gradient(to bottom, #3d1a0e, #1a1020);
+    flex-shrink: 0;
+  }
+  .popup-content {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    flex: 1;
+  }
+  .popup-emoji { font-size: 22px; flex-shrink: 0; }
+  .popup-info { flex: 1; min-width: 0; }
+  .popup-name {
+    font-size: 11px;
+    color: #2c2c2c;
+    margin-bottom: 2px;
+    font-style: italic;
+  }
+  .popup-sub {
+    font-family: sans-serif;
+    font-size: 9px;
+    color: #aaa;
+    line-height: 1.4;
+  }
+  .popup-btn {
+    font-family: sans-serif;
+    font-size: 8.5px;
+    color: #8b6f4e;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── BOTTOM TABS ── */
+  .tabs {
+    display: flex;
+    background: #faf9f6;
+    border-top: 1px solid #ede9e3;
+    padding: 9px 0 11px;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 8px;
+    color: #ccc;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .tab.active { color: #2c2c2c; }
+  .tab-icon { font-size: 15px; display: block; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<div class="page-title">테마 상세 화면 v3</div>
+<div class="page-subtitle">밝은 톤 복귀 + 카드 이미지 영역 풍부하게</div>
+
+<div class="phones">
+
+  <!-- CARD VIEW -->
+  <div class="phone-block">
+    <div class="phone-label">카드뷰</div>
+    <div class="phone">
+      <div class="theme-hero" style="background: linear-gradient(160deg, #1a1020 0%, #3d1a0e 100%);">
+        <div class="hero-back">← 교토</div>
+        <div class="hero-content">
+          <div class="hero-places">📍 7곳</div>
+          <div class="hero-title">미시마 유키오의<br>금각사 루트</div>
+        </div>
+      </div>
+
+      <div class="view-tabs">
+        <div class="view-tab active">카드뷰</div>
+        <div class="view-tab">지도뷰</div>
+      </div>
+
+      <div class="card-list">
+
+        <div class="place-card">
+          <div class="card-img" style="background: linear-gradient(135deg, #2a1505 0%, #6b3412 50%, #3d1f08 100%);">
+            <div class="card-num">01</div>
+            <div class="card-emoji">🏯</div>
+            <div class="card-img-bottom">
+              <div class="card-place-name">금각사<br>(킨카쿠지)</div>
+              <div class="card-location">기타야마 · 교토</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-story">"미조구치가 집착한 그 아름다움. 불꽃보다 더 오래 타오르는 것들에 대하여."</div>
+            <div class="card-footer">
+              <div class="card-tags">
+                <span class="card-tag">1950년대</span>
+                <span class="card-tag">사원</span>
+              </div>
+              <span class="card-cta">보기 →</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="place-card">
+          <div class="card-img" style="background: linear-gradient(135deg, #081422 0%, #0f2a42 50%, #071020 100%);">
+            <div class="card-num">02</div>
+            <div class="card-emoji">⛩️</div>
+            <div class="card-img-bottom">
+              <div class="card-place-name">료안지<br>석정</div>
+              <div class="card-location">우쿄구 · 교토</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-story">"작가가 자주 찾아 사색했던 곳. 비어있음과 가득참이 공존하는 정원."</div>
+            <div class="card-footer">
+              <div class="card-tags">
+                <span class="card-tag">선사</span>
+                <span class="card-tag">정원</span>
+              </div>
+              <span class="card-cta">보기 →</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center; padding: 2px 0 6px; font-family:sans-serif; font-size:9px; color:#ccc; letter-spacing:0.1em;">5곳 더 ↓</div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active"><span class="tab-icon">📖</span>스토리</div>
+        <div class="tab"><span class="tab-icon">🗺️</span>지도</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP VIEW -->
+  <div class="phone-block">
+    <div class="phone-label">지도뷰</div>
+    <div class="phone">
+      <div class="theme-hero" style="background: linear-gradient(160deg, #1a1020 0%, #3d1a0e 100%);">
+        <div class="hero-back">← 교토</div>
+        <div class="hero-content">
+          <div class="hero-places">📍 7곳</div>
+          <div class="hero-title">미시마 유키오의<br>금각사 루트</div>
+        </div>
+      </div>
+
+      <div class="view-tabs">
+        <div class="view-tab">카드뷰</div>
+        <div class="view-tab active">지도뷰</div>
+      </div>
+
+      <div class="map-container">
+        <div class="map-bg"></div>
+        <div class="road-h" style="top:72px; height:8px;"></div>
+        <div class="road-h" style="top:128px; height:5px;"></div>
+        <div class="road-h" style="top:192px; height:7px;"></div>
+        <div class="road-v" style="left:66px; width:7px;"></div>
+        <div class="road-v" style="left:136px; width:5px;"></div>
+        <div class="road-v" style="left:204px; width:7px;"></div>
+
+        <div class="map-topbar">
+          <div class="map-topbar-title">미시마 유키오의 금각사 루트</div>
+          <div class="map-count">7곳</div>
+        </div>
+
+        <div class="pin" style="left:90px; top:106px;">
+          <div class="pin-bubble active">🏯</div>
+          <div class="pin-tail active"></div>
+        </div>
+        <div class="pin" style="left:156px; top:86px;">
+          <div class="pin-bubble">⛩️</div>
+          <div class="pin-tail"></div>
+        </div>
+        <div class="pin" style="left:56px; top:160px;">
+          <div class="pin-bubble">🌿</div>
+          <div class="pin-tail"></div>
+        </div>
+        <div class="pin" style="left:196px; top:150px;">
+          <div class="pin-bubble">📖</div>
+          <div class="pin-tail"></div>
+        </div>
+        <div class="pin" style="left:130px; top:203px;">
+          <div class="pin-bubble">🕯️</div>
+          <div class="pin-tail"></div>
+        </div>
+
+        <div class="map-popup">
+          <div class="popup-color-bar"></div>
+          <div class="popup-content">
+            <div class="popup-emoji">🏯</div>
+            <div class="popup-info">
+              <div class="popup-name">금각사 (킨카쿠지)</div>
+              <div class="popup-sub">미조구치가 집착한 바로 그 건물</div>
+            </div>
+            <div class="popup-btn">보기 →</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active"><span class="tab-icon">📖</span>스토리</div>
+        <div class="tab"><span class="tab-icon">🗺️</span>지도</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

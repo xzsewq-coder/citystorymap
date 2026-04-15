@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>첫 화면 — 캐러셀형</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Georgia', serif; background: #f0ede7; color: #2c2c2c; }
+
+  .page-title {
+    text-align: center;
+    padding: 28px 24px 4px;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #888;
+    font-family: sans-serif;
+  }
+  .page-subtitle {
+    text-align: center;
+    padding: 0 24px 24px;
+    font-size: 13px;
+    color: #666;
+    font-family: sans-serif;
+  }
+
+  .phone-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    padding: 0 40px 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .phone {
+    width: 280px;
+    background: white;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    border: 1px solid #e0ddd8;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    background: #faf9f6;
+    padding: 14px 18px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ede9e3;
+  }
+  .nav-logo {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #2c2c2c;
+  }
+  .nav-city {
+    font-family: sans-serif;
+    font-size: 9px;
+    color: #999;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── CAROUSEL ── */
+  .carousel {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+  }
+  .carousel-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px 18px 16px;
+    opacity: 0;
+    transition: opacity 0.6s;
+  }
+  .carousel-slide.active { opacity: 1; }
+  .carousel-slide::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 140px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.72));
+    pointer-events: none;
+  }
+  .slide-content { position: relative; z-index: 1; }
+  .slide-tag {
+    font-family: sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 5px;
+  }
+  .slide-title {
+    font-size: 17px;
+    color: white;
+    line-height: 1.35;
+    font-style: italic;
+    margin-bottom: 5px;
+  }
+  .slide-hook {
+    font-family: sans-serif;
+    font-size: 9.5px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.55;
+    margin-bottom: 10px;
+  }
+  .slide-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .slide-places {
+    font-family: sans-serif;
+    font-size: 9px;
+    color: rgba(255,255,255,0.5);
+  }
+  .slide-cta {
+    font-family: sans-serif;
+    font-size: 9px;
+    color: #f0c070;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* dots */
+  .carousel-dots {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 5px;
+    z-index: 2;
+  }
+  .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    transition: background 0.3s, width 0.3s;
+  }
+  .dot.active {
+    background: white;
+    width: 14px;
+    border-radius: 3px;
+  }
+
+  /* ── STORY LIST ── */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 14px 16px 8px;
+    border-bottom: 1px solid #f0ece6;
+  }
+  .section-title {
+    font-family: sans-serif;
+    font-size: 8.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #aaa;
+  }
+  .section-count {
+    font-family: sans-serif;
+    font-size: 8.5px;
+    color: #8b6f4e;
+  }
+
+  .story-row {
+    display: flex;
+    gap: 0;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f5f2ee;
+    align-items: center;
+    cursor: pointer;
+  }
+  .story-row:hover { background: #faf9f6; }
+  .story-emoji {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-right: 11px;
+  }
+  .story-info { flex: 1; min-width: 0; }
+  .story-title {
+    font-size: 11px;
+    color: #2c2c2c;
+    line-height: 1.35;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .story-sub {
+    font-family: sans-serif;
+    font-size: 9px;
+    color: #bbb;
+  }
+  .story-arrow {
+    font-size: 10px;
+    color: #ccc;
+    margin-left: 8px;
+  }
+
+  /* ── BOTTOM TABS ── */
+  .tabs {
+    display: flex;
+    background: #faf9f6;
+    border-top: 1px solid #ede9e3;
+    padding: 8px 0 10px;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 8px;
+    color: #bbb;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .tab.active { color: #2c2c2c; }
+  .tab-icon { font-size: 16px; display: block; margin-bottom: 2px; }
+
+  /* ── INFO PANEL ── */
+  .info-panel {
+    width: 280px;
+    padding-top: 16px;
+  }
+  .info-title {
+    font-family: sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #2c2c2c;
+    margin-bottom: 16px;
+  }
+  .info-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+  .info-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #2c2c2c;
+    color: white;
+    font-family: sans-serif;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .info-text { flex: 1; }
+  .info-label {
+    font-family: sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    color: #2c2c2c;
+    margin-bottom: 2px;
+  }
+  .info-desc {
+    font-family: sans-serif;
+    font-size: 10px;
+    color: #888;
+    line-height: 1.55;
+  }
+  .divider {
+    height: 1px;
+    background: #ede9e3;
+    margin: 20px 0;
+  }
+  .note {
+    font-family: sans-serif;
+    font-size: 10px;
+    color: #999;
+    line-height: 1.6;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">첫 화면 — 캐러셀 확정안</div>
+<div class="page-subtitle">자동 슬라이드 히어로 + 전체 스토리 리스트</div>
+
+<div class="phone-wrap">
+
+  <!-- PHONE MOCKUP -->
+  <div class="phone">
+    <div class="nav">
+      <div class="nav-logo">CityStoryMap</div>
+      <div class="nav-city">📍 교토 Kyoto</div>
+    </div>
+
+    <!-- Carousel -->
+    <div class="carousel" id="carousel">
+      <!-- Slide 1 -->
+      <div class="carousel-slide active" style="background: linear-gradient(160deg, #1a1020 0%, #3d1a0e 100%);">
+        <div class="slide-content">
+          <div class="slide-tag">소설 · 1956년</div>
+          <div class="slide-title">미시마 유키오의<br>금각사 루트</div>
+          <div class="slide-hook">불꽃처럼 살다 간 작가가 바라본<br>교토의 풍경들을 따라서</div>
+          <div class="slide-meta">
+            <span class="slide-places">📍 7곳</span>
+            <span class="slide-cta">탐험하기 →</span>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="carousel-slide" style="background: linear-gradient(160deg, #0e1a2e 0%, #1a2e4a 100%);">
+        <div class="slide-content">
+          <div class="slide-tag">애니메이션 · 2013년</div>
+          <div class="slide-title">〈언어의 정원〉<br>신카이의 교토</div>
+          <div class="slide-hook">빗소리와 함께 기억되는<br>그 여름의 장소들</div>
+          <div class="slide-meta">
+            <span class="slide-places">📍 5곳</span>
+            <span class="slide-cta">탐험하기 →</span>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="carousel-slide" style="background: linear-gradient(160deg, #1a1200 0%, #3a2800 100%);">
+        <div class="slide-content">
+          <div class="slide-tag">역사 · 막부 말기</div>
+          <div class="slide-title">신센구미가<br>활약하던 곳</div>
+          <div class="slide-hook">교토를 지키려 했던<br>마지막 무사들의 발자취</div>
+          <div class="slide-meta">
+            <span class="slide-places">📍 8곳</span>
+            <span class="slide-cta">탐험하기 →</span>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 4 -->
+      <div class="carousel-slide" style="background: linear-gradient(160deg, #1a0a0a 0%, #3a1010 100%);">
+        <div class="slide-content">
+          <div class="slide-tag">역사 · 메이지 유신</div>
+          <div class="slide-title">사카모토 료마의<br>마지막 날들</div>
+          <div class="slide-hook">유신의 불꽃이 꺼진 교토,<br>그가 마지막으로 걸었던 길</div>
+          <div class="slide-meta">
+            <span class="slide-places">📍 6곳</span>
+            <span class="slide-cta">탐험하기 →</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-dots">
+        <div class="dot active" id="dot0"></div>
+        <div class="dot" id="dot1"></div>
+        <div class="dot" id="dot2"></div>
+        <div class="dot" id="dot3"></div>
+      </div>
+    </div>
+
+    <!-- Story list -->
+    <div class="section-header">
+      <span class="section-title">교토의 모든 이야기</span>
+      <span class="section-count">12개</span>
+    </div>
+
+    <div class="story-row">
+      <div class="story-emoji" style="background:#f0ede7;">📖</div>
+      <div class="story-info">
+        <div class="story-title">미시마 유키오의 금각사 루트</div>
+        <div class="story-sub">소설 · 7곳</div>
+      </div>
+      <div class="story-arrow">›</div>
+    </div>
+    <div class="story-row">
+      <div class="story-emoji" style="background:#e8edf4;">🌌</div>
+      <div class="story-info">
+        <div class="story-title">〈언어의 정원〉 성지순례</div>
+        <div class="story-sub">애니메이션 · 5곳</div>
+      </div>
+      <div class="story-arrow">›</div>
+    </div>
+    <div class="story-row">
+      <div class="story-emoji" style="background:#edf0e8;">⛩️</div>
+      <div class="story-info">
+        <div class="story-title">신센구미가 활약하던 곳</div>
+        <div class="story-sub">역사 · 8곳</div>
+      </div>
+      <div class="story-arrow">›</div>
+    </div>
+    <div class="story-row" style="opacity:0.5;">
+      <div class="story-emoji" style="background:#f4e8e8;">⚔️</div>
+      <div class="story-info">
+        <div class="story-title">사카모토 료마의 마지막 날들</div>
+        <div class="story-sub">역사 · 6곳</div>
+      </div>
+      <div class="story-arrow">›</div>
+    </div>
+    <div style="text-align:center; padding: 8px; font-family:sans-serif; font-size:9px; color:#ccc;">더 보기 ↓</div>
+
+    <!-- Bottom tabs -->
+    <div class="tabs">
+      <div class="tab active">
+        <span class="tab-icon">📖</span>스토리
+      </div>
+      <div class="tab">
+        <span class="tab-icon">🗺️</span>지도
+      </div>
+    </div>
+  </div>
+
+  <!-- INFO PANEL -->
+  <div class="info-panel">
+    <div class="info-title">화면 구성 설명</div>
+
+    <div class="info-item">
+      <div class="info-num">1</div>
+      <div class="info-text">
+        <div class="info-label">자동 슬라이드 히어로</div>
+        <div class="info-desc">4~5초마다 자동 전환. 첫 방문자는 스크롤 없이도 여러 스토리를 자연스럽게 접함. 닷(●)으로 현재 위치 표시.</div>
+      </div>
+    </div>
+
+    <div class="info-item">
+      <div class="info-num">2</div>
+      <div class="info-text">
+        <div class="info-label">전체 스토리 리스트</div>
+        <div class="info-desc">히어로 아래에 모든 스토리를 컴팩트 리스트로. 관심 있는 스토리를 바로 찾아 들어갈 수 있음.</div>
+      </div>
+    </div>
+
+    <div class="info-item">
+      <div class="info-num">3</div>
+      <div class="info-text">
+        <div class="info-label">스토리 / 지도 탭</div>
+        <div class="info-desc">하단에 탭 두 개. 스토리 탭(현재)과 지도 탭 전환. 지도 탭에선 교토 전체 지도 + 모든 테마 핀.</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="note">
+      캐러셀 슬라이드는 운영자가 직접 순서와 노출 여부를 관리.<br>
+      새 스토리 추가 시 자동으로 리스트에 반영됨.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.carousel-slide');
+  const dots = document.querySelectorAll('.dot');
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  setInterval(() => goTo(current + 1), 3500);
+</script>
+</body>
+</html>
