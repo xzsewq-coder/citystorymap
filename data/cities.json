@@ -1,0 +1,14 @@
+{
+  "cities": [
+    {
+      "id": "kyoto",
+      "name_ko": "교토",
+      "name_en": "Kyoto",
+      "name_local": "京都",
+      "description": "천년 고도, 이야기가 숨 쉬는 도시",
+      "country": "일본",
+      "timezone": "Asia/Tokyo",
+      "theme_count": 3
+    }
+  ]
+}
