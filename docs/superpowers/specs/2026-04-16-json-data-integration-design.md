@@ -198,3 +198,47 @@ flutter:
 - [ ] 라이브러리 화면이 `related_works.json` 전체 데이터로 표시됨
 - [ ] 라이브러리 "자세히 보기" 버튼이 외부 URL을 열음
 - [ ] 하드코딩 샘플 데이터가 모두 제거됨
+
+---
+
+## 구현 계획
+
+### Step 1. 환경 설정 (`pubspec.yaml`)
+- `url_launcher: ^6.3.0` 추가
+- assets에 `data/themes.json`, `data/places.json`, `data/related_works.json` 등록
+- `flutter pub get` 실행
+
+### Step 2. 모델 클래스 생성
+- `lib/models/theme_model.dart`: `factory ThemeModel.fromJson` 포함. `hero_gradient` hex 문자열(`#1a1a2e`) → `Color(0xFF1a1a2e)` 변환 로직 포함
+- `lib/models/place_model.dart`: `factory PlaceModel.fromJson` 포함
+- `lib/models/related_work_model.dart`: `factory RelatedWorkModel.fromJson` 포함
+
+### Step 3. DataService 구현 (`lib/services/data_service.dart`)
+- `static Future<void> initialize()`: 앱 시작 시 3개 JSON 로드 + 파싱 + 캐싱
+- 동기 조회 메서드 5개 구현
+- 초기화 실패 시 빈 리스트로 graceful degradation
+
+### Step 4. `main.dart` 수정
+- `WidgetsFlutterBinding.ensureInitialized()` 추가
+- `await DataService.initialize()` 호출 후 `runApp()`
+
+### Step 5. `home_screen.dart` 수정
+- `_ThemeData` 내부 클래스 제거
+- `_themes` 하드코딩 제거 → `DataService.instance.getThemes()` / `getFeaturedThemes()`
+- `ThemeDetailScreen` 파라미터를 `ThemeModel` 기준으로 정리
+
+### Step 6. `theme_detail_screen.dart` 수정
+- `_PlaceData` 내부 클래스 제거
+- `switch(themeId)` 하드코딩 분기 제거 → `DataService.instance.getPlacesByTheme(themeId)`
+- 관련작품 탭 → `DataService.instance.getRelatedWorksByTheme(themeId)`
+
+### Step 7. `library_screen.dart` 수정
+- `_WorkItem` 내부 클래스 제거
+- 샘플 데이터 제거 → `DataService.instance.getAllRelatedWorks()`
+- 카테고리 필터 목록 수정: `['전체', '소설', '영화', '애니메이션']` ('드라마' 제거)
+- type 매핑: `book→소설`, `movie→영화`, `anime→애니메이션`
+- "자세히 보기" 버튼: `url_launcher`로 `externalUrl` 열기. URL 없으면 버튼 숨김
+
+### Step 8. 플랫폼 설정 (url_launcher)
+- `android/app/src/main/AndroidManifest.xml`에 `<queries>` 블록 추가 (http/https intent)
+- iOS는 별도 설정 불필요 (기본 지원)
