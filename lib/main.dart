@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'services/data_service.dart';
 import 'screens/home_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/library_screen.dart';
 
-/// 앱 진입점
-void main() {
+/// 앱 진입점 - DataService 초기화 후 앱 실행
+void main() async {
+  // Flutter 엔진 초기화 (비동기 작업 전 필수)
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // JSON 데이터 로딩 (앱 시작 시 한 번만)
+  await DataService.initialize();
+
   runApp(const CityStoryMapApp());
 }
 
