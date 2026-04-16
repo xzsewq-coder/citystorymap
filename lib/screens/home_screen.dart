@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../models/theme_model.dart';
+import '../services/data_service.dart';
 import 'theme_detail_screen.dart';
 
 /// 홈 화면 (스토리 탭)
@@ -22,43 +24,18 @@ class _HomeScreenState extends State<HomeScreen> {
   // 자동 슬라이드 타이머
   Timer? _autoSlideTimer;
 
-  // 샘플 테마 데이터 (추후 JSON에서 로딩)
-  final List<_ThemeData> _themes = [
-    _ThemeData(
-      id: 'shinsengumi',
-      emoji: '⚔️',
-      title: '신선조 협객의 교토',
-      category: '역사',
-      year: '1863-1869',
-      hookText: '막부 말기, 교토를 지킨 검객들의 발자취를 따라 걷다',
-      placeCount: 5,
-      gradientColors: [const Color(0xFF1A1A2E), const Color(0xFF16213E)],
-    ),
-    _ThemeData(
-      id: 'kinkakuji-mishima',
-      emoji: '🏯',
-      title: '미시마 유키오의 금각사',
-      category: '소설',
-      year: '1956',
-      hookText: '아름다움에 사로잡힌 한 청년의 광기어린 집착',
-      placeCount: 4,
-      gradientColors: [const Color(0xFF2D132C), const Color(0xFF801336)],
-    ),
-    _ThemeData(
-      id: 'garden-of-words',
-      emoji: '🌧️',
-      title: '〈언어의 정원〉의 교토',
-      category: '애니메이션',
-      year: '2013',
-      hookText: '비 오는 날, 정원에서 시작된 두 사람의 이야기',
-      placeCount: 3,
-      gradientColors: [const Color(0xFF134E5E), const Color(0xFF71B280)],
-    ),
-  ];
+  // DataService에서 로드한 테마 목록
+  late final List<ThemeModel> _allThemes;
+
+  // 캐러셀에 표시할 featured 테마 목록
+  late final List<ThemeModel> _featuredThemes;
 
   @override
   void initState() {
     super.initState();
+    // DataService에서 데이터 로드 (동기 - 이미 캐싱됨)
+    _allThemes = DataService.instance.getThemes();
+    _featuredThemes = DataService.instance.getFeaturedThemes();
     // 자동 슬라이드 시작 (3.5초 간격)
     _startAutoSlide();
   }
@@ -72,9 +49,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// 자동 슬라이드 시작
   void _startAutoSlide() {
+    if (_featuredThemes.isEmpty) return;
     _autoSlideTimer = Timer.periodic(const Duration(milliseconds: 3500), (timer) {
       if (_pageController.hasClients) {
-        final nextPage = (_currentPage + 1) % _themes.length;
+        final nextPage = (_currentPage + 1) % _featuredThemes.length;
         _pageController.animateToPage(
           nextPage,
           duration: const Duration(milliseconds: 400),
@@ -85,18 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// 테마 상세 화면으로 이동
-  void _navigateToThemeDetail(_ThemeData theme) {
+  void _navigateToThemeDetail(ThemeModel theme) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ThemeDetailScreen(
-          themeId: theme.id,
-          title: theme.title,
-          category: theme.category,
-          year: theme.year,
-          placeCount: theme.placeCount,
-          gradientColors: theme.gradientColors,
-        ),
+        builder: (context) => ThemeDetailScreen(theme: theme),
       ),
     );
   }
@@ -156,6 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// 히어로 캐러셀 (자동 슬라이드)
   Widget _buildHeroCarousel(BuildContext context) {
+    if (_featuredThemes.isEmpty) return const SizedBox.shrink();
     return Column(
       children: [
         // 캐러셀 본체
@@ -168,9 +140,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 _currentPage = index;
               });
             },
-            itemCount: _themes.length,
+            itemCount: _featuredThemes.length,
             itemBuilder: (context, index) {
-              return _buildCarouselSlide(context, _themes[index]);
+              return _buildCarouselSlide(context, _featuredThemes[index]);
             },
           ),
         ),
@@ -180,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // 닷 인디케이터
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(_themes.length, (index) {
+          children: List.generate(_featuredThemes.length, (index) {
             final isActive = index == _currentPage;
             return AnimatedContainer(
               duration: const Duration(milliseconds: 300),
@@ -201,14 +173,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// 캐러셀 슬라이드 아이템
-  Widget _buildCarouselSlide(BuildContext context, _ThemeData theme) {
+  Widget _buildCarouselSlide(BuildContext context, ThemeModel theme) {
     return GestureDetector(
       onTap: () => _navigateToThemeDetail(theme),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: theme.gradientColors,
+            colors: theme.heroGradient,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -242,15 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 8),
-
-                  // 이모지
-                  Text(
-                    theme.emoji,
-                    style: const TextStyle(fontSize: 32),
-                  ),
-
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
 
                   // 테마 제목
                   Text(
@@ -347,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
-                '${_themes.length}',
+                '${_allThemes.length}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -358,9 +322,8 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 16),
 
           // 스토리 카드들
-          ...List.generate(_themes.length, (index) {
-            final theme = _themes[index];
-            return _buildStoryCard(context, theme);
+          ...List.generate(_allThemes.length, (index) {
+            return _buildStoryCard(context, _allThemes[index]);
           }),
         ],
       ),
@@ -368,7 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// 스토리 카드 위젯
-  Widget _buildStoryCard(BuildContext context, _ThemeData theme) {
+  Widget _buildStoryCard(BuildContext context, ThemeModel theme) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Material(
@@ -382,18 +345,26 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // 이모지 썸네일
+                // 그라디언트 썸네일
                 Container(
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.outline,
+                    gradient: LinearGradient(
+                      colors: theme.heroGradient,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
                     child: Text(
-                      theme.emoji,
-                      style: const TextStyle(fontSize: 24),
+                      theme.category[0], // 카테고리 첫 글자
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -432,29 +403,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
-
-/// 테마 데이터 클래스
-class _ThemeData {
-  final String id;
-  final String emoji;
-  final String title;
-  final String category;
-  final String year;
-  final String hookText;
-  final int placeCount;
-  final List<Color> gradientColors;
-
-  _ThemeData({
-    required this.id,
-    required this.emoji,
-    required this.title,
-    required this.category,
-    required this.year,
-    required this.hookText,
-    required this.placeCount,
-    required this.gradientColors,
-  });
 }
 
 /// 캐러셀 배경 텍스처 패턴 페인터
