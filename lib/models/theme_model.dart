@@ -48,8 +48,14 @@ class ThemeModel {
   }
 
   /// hex 색상 문자열을 Color로 변환 (#1a1a2e → Color(0xFF1a1a2e))
+  /// 잘못된 형식이면 검은색으로 폴백하고 디버그 어설션 발생
   static Color _hexToColor(String hex) {
-    final cleaned = hex.replaceAll('#', '');
-    return Color(int.parse('FF$cleaned', radix: 16));
+    try {
+      final cleaned = hex.replaceAll('#', '');
+      return Color(int.parse('FF$cleaned', radix: 16));
+    } catch (_) {
+      assert(false, 'themes.json에 잘못된 hex 색상값이 있습니다: $hex');
+      return const Color(0xFF000000); // 폴백 색상
+    }
   }
 }
