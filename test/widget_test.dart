@@ -1,9 +1,4 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// CityStoryMap 앱 기본 위젯 테스트
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,20 +6,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:citystorymap/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('앱이 정상적으로 로드되는지 테스트', (WidgetTester tester) async {
+    // 앱 빌드
+    await tester.pumpWidget(const CityStoryMapApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // 하단 탭 바가 존재하는지 확인
+    expect(find.text('스토리'), findsOneWidget);
+    expect(find.text('지도'), findsOneWidget);
+    expect(find.text('라이브러리'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // 홈 화면 타이틀이 보이는지 확인
+    expect(find.text('CityStoryMap'), findsOneWidget);
   });
 }
