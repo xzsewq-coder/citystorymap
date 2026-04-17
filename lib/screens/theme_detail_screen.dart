@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../models/theme_model.dart';
+import '../models/place_model.dart';
+import '../models/related_work_model.dart';
+import '../services/data_service.dart';
 
 /// 테마 상세 화면
 /// - 히어로 헤더 (그라디언트 배경)
 /// - 3개 탭: 카드뷰 / 지도뷰 / 관련작품
 class ThemeDetailScreen extends StatefulWidget {
-  final String themeId;
-  final String title;
-  final String category;
-  final String year;
-  final int placeCount;
-  final List<Color> gradientColors;
+  // 테마 모델 객체를 직접 받음
+  final ThemeModel theme;
 
   const ThemeDetailScreen({
     super.key,
-    required this.themeId,
-    required this.title,
-    required this.category,
-    required this.year,
-    required this.placeCount,
-    required this.gradientColors,
+    required this.theme,
   });
 
   @override
@@ -30,117 +26,34 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
   // 탭 컨트롤러
   late TabController _tabController;
 
-  // 샘플 장소 데이터 (테마별로 다르게 - 추후 JSON 로딩)
-  List<_PlaceData> get _places {
-    switch (widget.themeId) {
-      case 'shinsengumi':
-        return [
-          _PlaceData(
-            emoji: '⚔️',
-            name: '이케다야 터',
-            district: '가와라마치',
-            quote: '1864년, 신선조는 이곳에서 존왕양이파 지사들을 급습했다.',
-            tags: ['1864년', '전투지'],
-          ),
-          _PlaceData(
-            emoji: '🏯',
-            name: '미부 둔소 터',
-            district: '미부',
-            quote: '신선조가 결성되고 훈련했던 본거지.',
-            tags: ['1863년', '본거지'],
-          ),
-          _PlaceData(
-            emoji: '⛩️',
-            name: '니시혼간지',
-            district: '시모교구',
-            quote: '신선조가 미부에서 이전한 두 번째 둔소.',
-            tags: ['1865년', '세계문화유산'],
-          ),
-          _PlaceData(
-            emoji: '🏮',
-            name: '시마바라 유곽',
-            district: '시모교구',
-            quote: '신선조 대원들이 자주 찾았던 유흥가.',
-            tags: ['유흥가', '로맨스'],
-          ),
-          _PlaceData(
-            emoji: '🗡️',
-            name: '데라다야 여관',
-            district: '후시미',
-            quote: '사카모토 료마가 습격을 피해 탈출한 곳.',
-            tags: ['1866년', '료마'],
-          ),
-        ];
-      case 'kinkakuji-mishima':
-        return [
-          _PlaceData(
-            emoji: '🏯',
-            name: '금각사',
-            district: '기타구',
-            quote: '미조구치가 집착한 "절대적 아름다움".',
-            tags: ['1950년대', '사원'],
-          ),
-          _PlaceData(
-            emoji: '🍃',
-            name: '다이토쿠지',
-            district: '기타구',
-            quote: '소설 속 미조구치가 수행했던 선종 사찰.',
-            tags: ['선종', '수행'],
-          ),
-          _PlaceData(
-            emoji: '🌲',
-            name: '난젠지',
-            district: '사쿄구',
-            quote: '거대한 삼문이 압도적 존재감을 드러낸다.',
-            tags: ['사원', '삼문'],
-          ),
-          _PlaceData(
-            emoji: '🪨',
-            name: '료안지 석정',
-            district: '우쿄구',
-            quote: '15개의 돌, 그러나 어디서 보아도 14개만 보인다.',
-            tags: ['석정', '명상'],
-          ),
-        ];
-      case 'garden-of-words':
-        return [
-          _PlaceData(
-            emoji: '🌧️',
-            name: '쇼세이엔 정원',
-            district: '시모교구',
-            quote: '비 내리는 정원의 고요함.',
-            tags: ['정원', '비'],
-          ),
-          _PlaceData(
-            emoji: '🍵',
-            name: '무린안',
-            district: '사쿄구',
-            quote: '동산을 배경으로 한 차경의 정원.',
-            tags: ['정원', '말차'],
-          ),
-          _PlaceData(
-            emoji: '🍁',
-            name: '에이칸도',
-            district: '사쿄구',
-            quote: '단풍의 명소이자, 빗방울이 가장 아름다운 사찰.',
-            tags: ['단풍', '사원'],
-          ),
-        ];
-      default:
-        return [];
-    }
-  }
+  // DataService에서 로드한 장소 목록
+  late final List<PlaceModel> _places;
+
+  // DataService에서 로드한 관련 작품 목록
+  late final List<RelatedWorkModel> _relatedWorks;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+
+    // DataService에서 해당 테마의 장소와 관련 작품 로드
+    _places = DataService.instance.getPlacesByTheme(widget.theme.id);
+    _relatedWorks = DataService.instance.getRelatedWorksByTheme(widget.theme.id);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  /// 외부 URL 열기 (관련 작품 링크)
+  Future<void> _launchUrl(String urlString) async {
+    final url = Uri.parse(urlString);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
   }
 
   @override
@@ -172,11 +85,13 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
 
   /// 히어로 헤더
   Widget _buildHeroHeader(BuildContext context) {
+    final theme = widget.theme;
+
     return Container(
       height: 160,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: widget.gradientColors,
+          colors: theme.heroGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -201,7 +116,7 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
                   ),
                   // 장소 수
                   Text(
-                    '${widget.placeCount}곳',
+                    '${theme.placeCount}곳',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 14,
@@ -214,7 +129,7 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
 
               // 카테고리 + 연도
               Text(
-                '${widget.category} · ${widget.year}',
+                '${theme.category} · ${theme.year}',
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 12,
@@ -225,7 +140,7 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
 
               // 테마 제목
               Text(
-                widget.title,
+                theme.title,
                 style: const TextStyle(
                   fontFamily: 'Georgia',
                   fontSize: 22,
@@ -266,8 +181,12 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
     );
   }
 
-  /// 카드뷰 탭
+  /// 카드뷰 탭 - 장소 카드 리스트
   Widget _buildCardView(BuildContext context) {
+    if (_places.isEmpty) {
+      return _buildEmptyState(context, '장소 정보가 없습니다');
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _places.length,
@@ -277,8 +196,10 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
     );
   }
 
-  /// 장소 카드
-  Widget _buildPlaceCard(BuildContext context, _PlaceData place, int order) {
+  /// 장소 카드 위젯
+  Widget _buildPlaceCard(BuildContext context, PlaceModel place, int order) {
+    final gradientColors = widget.theme.heroGradient;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -301,8 +222,8 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  widget.gradientColors[0].withValues(alpha: 0.8),
-                  widget.gradientColors[1].withValues(alpha: 0.8),
+                  gradientColors[0].withValues(alpha: 0.8),
+                  gradientColors[1].withValues(alpha: 0.8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -313,7 +234,7 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
             ),
             child: Stack(
               children: [
-                // 순번
+                // 순번 (01, 02...)
                 Positioned(
                   top: 12,
                   left: 12,
@@ -341,16 +262,21 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        place.name,
-                        style: const TextStyle(
-                          fontFamily: 'Georgia',
-                          fontSize: 16,
-                          fontStyle: FontStyle.italic,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                      // 장소명
+                      Flexible(
+                        child: Text(
+                          place.name,
+                          style: const TextStyle(
+                            fontFamily: 'Georgia',
+                            fontSize: 16,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      // 지역명
                       Text(
                         place.district,
                         style: TextStyle(
@@ -371,9 +297,9 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 인용문
+                // 스토리 인용문
                 Text(
-                  '"${place.quote}"',
+                  '"${place.storyQuote}"',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontStyle: FontStyle.italic,
                     height: 1.5,
@@ -411,7 +337,7 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
     );
   }
 
-  /// 지도뷰 탭 (목업)
+  /// 지도뷰 탭 (목업 - 추후 Google Maps 연동)
   Widget _buildMapView(BuildContext context) {
     return Container(
       color: const Color(0xFFE8E4DF),
@@ -438,7 +364,7 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                '이 테마의 ${widget.placeCount}개 장소가\n지도에 표시됩니다',
+                '이 테마의 ${widget.theme.placeCount}개 장소가\n지도에 표시됩니다',
                 style: Theme.of(context).textTheme.bodySmall,
                 textAlign: TextAlign.center,
               ),
@@ -451,8 +377,9 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
 
   /// 관련작품 탭
   Widget _buildRelatedWorksView(BuildContext context) {
-    // 테마별 관련 작품 (추후 JSON 로딩)
-    final works = _getRelatedWorks();
+    if (_relatedWorks.isEmpty) {
+      return _buildEmptyState(context, '관련 작품이 없습니다');
+    }
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -468,79 +395,13 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
         const SizedBox(height: 20),
 
         // 작품 리스트
-        ...works.map((work) => _buildWorkCard(context, work)),
+        ..._relatedWorks.map((work) => _buildWorkCard(context, work)),
       ],
     );
   }
 
-  /// 관련 작품 데이터 가져오기
-  List<_WorkData> _getRelatedWorks() {
-    switch (widget.themeId) {
-      case 'shinsengumi':
-        return [
-          _WorkData(
-            emoji: '📖',
-            title: '燃えよ剣',
-            titleKo: '타오르라 검이여',
-            creator: '시바 료타로',
-            year: 1964,
-          ),
-          _WorkData(
-            emoji: '🎬',
-            title: '壬生義士伝',
-            titleKo: '미부 의사전',
-            creator: '타키타 요지로',
-            year: 2003,
-          ),
-          _WorkData(
-            emoji: '🎞️',
-            title: '銀魂',
-            titleKo: '은혼',
-            creator: '소라치 히데아키',
-            year: 2006,
-          ),
-        ];
-      case 'kinkakuji-mishima':
-        return [
-          _WorkData(
-            emoji: '📖',
-            title: '金閣寺',
-            titleKo: '금각사',
-            creator: '미시마 유키오',
-            year: 1956,
-          ),
-          _WorkData(
-            emoji: '🎬',
-            title: '炎上',
-            titleKo: '염상',
-            creator: '이치카와 곤',
-            year: 1958,
-          ),
-        ];
-      case 'garden-of-words':
-        return [
-          _WorkData(
-            emoji: '🎞️',
-            title: '言の葉の庭',
-            titleKo: '언어의 정원',
-            creator: '신카이 마코토',
-            year: 2013,
-          ),
-          _WorkData(
-            emoji: '🎞️',
-            title: '君の名は。',
-            titleKo: '너의 이름은.',
-            creator: '신카이 마코토',
-            year: 2016,
-          ),
-        ];
-      default:
-        return [];
-    }
-  }
-
-  /// 작품 카드
-  Widget _buildWorkCard(BuildContext context, _WorkData work) {
+  /// 관련 작품 카드
+  Widget _buildWorkCard(BuildContext context, RelatedWorkModel work) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -557,7 +418,7 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
       ),
       child: Row(
         children: [
-          // 이모지
+          // 커버 이모지
           Container(
             width: 48,
             height: 48,
@@ -566,29 +427,35 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
-              child: Text(work.emoji, style: const TextStyle(fontSize: 24)),
+              child: Text(
+                work.coverEmoji,
+                style: const TextStyle(fontSize: 24),
+              ),
             ),
           ),
 
           const SizedBox(width: 16),
 
-          // 정보
+          // 작품 정보
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 일본어 제목
                 Text(
                   work.title,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontStyle: FontStyle.italic,
                   ),
                 ),
-                if (work.titleKo != null)
+                // 한국어 제목
+                if (work.titleKo.isNotEmpty)
                   Text(
-                    work.titleKo!,
+                    work.titleKo,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 const SizedBox(height: 4),
+                // 저자/감독 · 연도
                 Text(
                   '${work.creator} · ${work.year}',
                   style: Theme.of(context).textTheme.bodySmall,
@@ -598,52 +465,38 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
           ),
 
           // 외부 링크 버튼
-          IconButton(
-            icon: Icon(
-              Icons.open_in_new,
-              color: Theme.of(context).colorScheme.primary,
-              size: 20,
+          if (work.externalUrl.isNotEmpty)
+            IconButton(
+              icon: Icon(
+                Icons.open_in_new,
+                color: Theme.of(context).colorScheme.primary,
+                size: 20,
+              ),
+              onPressed: () => _launchUrl(work.externalUrl),
             ),
-            onPressed: () {
-              // TODO: 외부 URL 열기
-            },
+        ],
+      ),
+    );
+  }
+
+  /// 빈 상태 위젯
+  Widget _buildEmptyState(BuildContext context, String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.inbox_outlined,
+            size: 48,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
       ),
     );
   }
-}
-
-/// 장소 데이터 클래스
-class _PlaceData {
-  final String emoji;
-  final String name;
-  final String district;
-  final String quote;
-  final List<String> tags;
-
-  _PlaceData({
-    required this.emoji,
-    required this.name,
-    required this.district,
-    required this.quote,
-    required this.tags,
-  });
-}
-
-/// 작품 데이터 클래스
-class _WorkData {
-  final String emoji;
-  final String title;
-  final String? titleKo;
-  final String creator;
-  final int year;
-
-  _WorkData({
-    required this.emoji,
-    required this.title,
-    this.titleKo,
-    required this.creator,
-    required this.year,
-  });
 }
