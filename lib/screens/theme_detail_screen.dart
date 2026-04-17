@@ -4,6 +4,7 @@ import '../models/theme_model.dart';
 import '../models/place_model.dart';
 import '../models/related_work_model.dart';
 import '../services/data_service.dart';
+import 'place_detail_screen.dart';
 
 /// 테마 상세 화면
 /// - 히어로 헤더 (그라디언트 배경)
@@ -54,6 +55,19 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     }
+  }
+
+  /// 장소 상세 화면으로 이동
+  void _navigateToPlaceDetail(PlaceModel place) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlaceDetailScreen(
+          place: place,
+          theme: widget.theme,
+        ),
+      ),
+    );
   }
 
   @override
@@ -200,20 +214,22 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
   Widget _buildPlaceCard(BuildContext context, PlaceModel place, int order) {
     final gradientColors = widget.theme.heroGradient;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
+    return GestureDetector(
+      onTap: () => _navigateToPlaceDetail(place),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 이미지 영역 (그라디언트 + 이모지)
@@ -333,6 +349,7 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
             ),
           ),
         ],
+      ),
       ),
     );
   }
