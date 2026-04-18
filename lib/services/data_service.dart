@@ -15,16 +15,30 @@ class DataService {
   List<PlaceModel> _places = [];
   List<RelatedWorkModel> _relatedWorks = [];
 
+  // 현재 활성 도시 정보 (MVP: 교토 고정)
+  String _cityId = '';
+  String _cityNameKo = '';
+
   /// 앱 시작 시 한 번 호출 - assets의 모든 JSON 파일을 로드하고 파싱한다
   static Future<void> initialize() async {
     try {
+      final citiesJson = await rootBundle.loadString('data/cities.json');
       final themesJson = await rootBundle.loadString('data/themes.json');
       final placesJson = await rootBundle.loadString('data/places.json');
       final worksJson = await rootBundle.loadString('data/related_works.json');
 
+      final citiesData = json.decode(citiesJson) as Map<String, dynamic>;
       final themesData = json.decode(themesJson) as Map<String, dynamic>;
       final placesData = json.decode(placesJson) as Map<String, dynamic>;
       final worksData = json.decode(worksJson) as Map<String, dynamic>;
+
+      // MVP: 첫 번째 도시를 활성 도시로 사용
+      final cities = citiesData['cities'] as List<dynamic>;
+      if (cities.isNotEmpty) {
+        final city = cities.first as Map<String, dynamic>;
+        instance._cityId = city['id'] as String;
+        instance._cityNameKo = city['name_ko'] as String;
+      }
 
       instance._themes = (themesData['themes'] as List<dynamic>)
           .map((t) => ThemeModel.fromJson(t as Map<String, dynamic>))
@@ -53,6 +67,12 @@ class DataService {
     instance._places = places;
     instance._relatedWorks = relatedWorks;
   }
+
+  /// 현재 활성 도시 ID 반환
+  String get cityId => _cityId;
+
+  /// 현재 활성 도시 한국어 이름 반환
+  String get cityNameKo => _cityNameKo.isNotEmpty ? _cityNameKo : '교토';
 
   /// 전체 테마 목록 반환
   List<ThemeModel> getThemes() => List.unmodifiable(_themes);

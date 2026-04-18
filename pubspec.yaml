@@ -60,6 +60,7 @@ flutter:
 
   # JSON 데이터 파일 등록
   assets:
+    - data/cities.json
     - data/themes.json
     - data/places.json
     - data/related_works.json

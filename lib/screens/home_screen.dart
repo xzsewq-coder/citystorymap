@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            // 도시 선택 (MVP는 교토 고정)
+            // 도시 선택 (MVP는 첫 번째 도시 고정)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                '교토',
+                DataService.instance.cityNameKo,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w500,
                 ),
@@ -307,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '교토의 모든 이야기',
+                '${DataService.instance.cityNameKo}의 모든 이야기',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               Text(
@@ -345,7 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // 그라디언트 썸네일
+                // 이모지 썸네일 (그라디언트 배경)
                 Container(
                   width: 48,
                   height: 48,
@@ -359,12 +359,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      theme.category[0], // 카테고리 첫 글자
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      theme.emoji,
+                      style: const TextStyle(fontSize: 22),
                     ),
                   ),
                 ),

@@ -49,6 +49,8 @@ class RelatedWorkModel {
         return '소설';
       case 'movie':
         return '영화';
+      case 'drama':
+        return '드라마';
       case 'anime':
         return '애니메이션';
       default:

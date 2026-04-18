@@ -11,12 +11,14 @@ void main() {
     ThemeModel(
       id: 'shinsengumi', cityId: 'kyoto', title: '신선조',
       category: '역사', year: '1863', hookText: '훅', description: '설명',
+      emoji: '⚔️',
       heroGradient: [const Color(0xFF1a1a2e), const Color(0xFF16213e)],
       placeCount: 2, isFeatured: true, featuredOrder: 1,
     ),
     ThemeModel(
       id: 'kinkakuji-mishima', cityId: 'kyoto', title: '금각사',
       category: '소설', year: '1956', hookText: '훅2', description: '설명2',
+      emoji: '🏯',
       heroGradient: [const Color(0xFF2d132c), const Color(0xFF801336)],
       placeCount: 1, isFeatured: true, featuredOrder: 2,
     ),

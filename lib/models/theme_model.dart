@@ -9,6 +9,7 @@ class ThemeModel {
   final String year;
   final String hookText;
   final String description;
+  final String emoji; // 스토리 리스트 썸네일용 이모지
   final List<Color> heroGradient; // hex 문자열 → Color 변환됨
   final int placeCount;
   final bool isFeatured;
@@ -22,6 +23,7 @@ class ThemeModel {
     required this.year,
     required this.hookText,
     required this.description,
+    required this.emoji,
     required this.heroGradient,
     required this.placeCount,
     required this.isFeatured,
@@ -38,6 +40,7 @@ class ThemeModel {
       year: json['year'] as String,
       hookText: json['hook_text'] as String,
       description: json['description'] as String,
+      emoji: json['emoji'] as String? ?? '📖',
       heroGradient: (json['hero_gradient'] as List<dynamic>)
           .map((hex) => _hexToColor(hex as String))
           .toList(),

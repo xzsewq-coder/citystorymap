@@ -324,26 +324,44 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
 
                 const SizedBox(height: 12),
 
-                // 태그들
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: place.tags.map((tag) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
+                // 태그들 + CTA
+                Row(
+                  children: [
+                    // 태그
+                    Expanded(
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: place.tags.map((tag) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.outline,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              tag,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          );
+                        }).toList(),
                       ),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.outline,
-                        borderRadius: BorderRadius.circular(12),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    // 보기 → CTA
+                    Text(
+                      '보기 →',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w600,
                       ),
-                      child: Text(
-                        tag,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    );
-                  }).toList(),
+                    ),
+                  ],
                 ),
               ],
             ),

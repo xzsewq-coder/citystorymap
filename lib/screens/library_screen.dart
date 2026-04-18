@@ -31,6 +31,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     _FilterOption(type: 'all', label: '전체'),
     _FilterOption(type: 'book', label: '소설'),
     _FilterOption(type: 'movie', label: '영화'),
+    _FilterOption(type: 'drama', label: '드라마'),
     _FilterOption(type: 'anime', label: '애니메이션'),
   ];
 
@@ -128,7 +129,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '교토를 더 깊이',
+            '${DataService.instance.cityNameKo}를 더 깊이',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontStyle: FontStyle.italic,
             ),
