@@ -13,6 +13,7 @@ class PlaceModel {
   final int order;
   final double lat;
   final double lng;
+  final String imageUrl; // 장소 실사 이미지 URL (없으면 빈 문자열 → 그라디언트 폴백)
 
   const PlaceModel({
     required this.id,
@@ -28,6 +29,7 @@ class PlaceModel {
     required this.order,
     required this.lat,
     required this.lng,
+    required this.imageUrl,
   });
 
   /// JSON 맵에서 PlaceModel 생성
@@ -46,6 +48,10 @@ class PlaceModel {
       order: json['order'] as int,
       lat: (json['lat'] as num).toDouble(),
       lng: (json['lng'] as num).toDouble(),
+      imageUrl: json['image_url'] as String? ?? '',
     );
   }
+
+  /// 이미지 URL이 유효한지 여부
+  bool get hasImage => imageUrl.isNotEmpty;
 }

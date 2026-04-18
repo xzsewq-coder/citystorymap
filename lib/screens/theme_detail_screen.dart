@@ -232,78 +232,122 @@ class _ThemeDetailScreenState extends State<ThemeDetailScreen>
         child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 이미지 영역 (그라디언트 + 이모지)
+          // 이미지 영역 (실사 or 그라디언트+이모지 폴백)
           Container(
             height: 120,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  gradientColors[0].withValues(alpha: 0.8),
-                  gradientColors[1].withValues(alpha: 0.8),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(12),
               ),
+              // 이미지 없을 때 그라디언트 배경
+              gradient: place.hasImage
+                  ? null
+                  : LinearGradient(
+                      colors: [
+                        gradientColors[0].withValues(alpha: 0.8),
+                        gradientColors[1].withValues(alpha: 0.8),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
             ),
-            child: Stack(
-              children: [
-                // 순번 (01, 02...)
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Text(
-                    order.toString().padLeft(2, '0'),
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.5),
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(12),
+              ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // 실사 이미지 (URL 있을 때)
+                  if (place.hasImage)
+                    Image.network(
+                      place.imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stack) => Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              gradientColors[0].withValues(alpha: 0.8),
+                              gradientColors[1].withValues(alpha: 0.8),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  // 이미지 위 어두운 오버레이 (텍스트 가독성)
+                  if (place.hasImage)
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.5),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+
+                  // 순번 (01, 02...)
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Text(
+                      order.toString().padLeft(2, '0'),
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                // 이모지
-                Center(
-                  child: Text(
-                    place.emoji,
-                    style: const TextStyle(fontSize: 48),
-                  ),
-                ),
-                // 장소명 + 지역
-                Positioned(
-                  bottom: 12,
-                  left: 12,
-                  right: 12,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // 장소명
-                      Flexible(
-                        child: Text(
-                          place.name,
-                          style: const TextStyle(
-                            fontFamily: 'Georgia',
-                            fontSize: 16,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+
+                  // 이모지 (이미지 없을 때만 중앙 표시)
+                  if (!place.hasImage)
+                    Center(
+                      child: Text(
+                        place.emoji,
+                        style: const TextStyle(fontSize: 48),
+                      ),
+                    ),
+
+                  // 장소명 + 지역 (항상 하단에 표시)
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    right: 12,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            place.name,
+                            style: const TextStyle(
+                              fontFamily: 'Georgia',
+                              fontSize: 16,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      // 지역명
-                      Text(
-                        place.district,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.7),
-                          fontSize: 12,
+                        Text(
+                          place.district,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.7),
+                            fontSize: 12,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 

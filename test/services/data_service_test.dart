@@ -29,19 +29,19 @@ void main() {
       id: 'ikedaya', themeId: 'shinsengumi', name: '이케다야', emoji: '⚔️',
       district: '가와라마치', storyQuote: '인용문', detailStory: '상세',
       relatedPerson: '오키타', visitTip: '팁', tags: ['1864년'], order: 1,
-      lat: 35.0, lng: 135.7,
+      lat: 35.0, lng: 135.7, imageUrl: '',
     ),
     PlaceModel(
       id: 'mibu', themeId: 'shinsengumi', name: '미부', emoji: '🏯',
       district: '미부', storyQuote: '인용문2', detailStory: '상세2',
       relatedPerson: '곤도', visitTip: '팁2', tags: ['1863년'], order: 2,
-      lat: 35.0, lng: 135.7,
+      lat: 35.0, lng: 135.7, imageUrl: '',
     ),
     PlaceModel(
       id: 'kinkakuji', themeId: 'kinkakuji-mishima', name: '금각사', emoji: '🏯',
       district: '기타구', storyQuote: '인용문3', detailStory: '상세3',
       relatedPerson: '', visitTip: '팁3', tags: ['1950년대'], order: 1,
-      lat: 35.0, lng: 135.7,
+      lat: 35.0, lng: 135.7, imageUrl: '',
     ),
   ];
 
